@@ -1,6 +1,6 @@
 package goapipkg
 
 type ImplResponse struct {
-	//Code int
+	Code int
 	Body interface{}
 }

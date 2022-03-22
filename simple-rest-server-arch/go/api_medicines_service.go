@@ -22,19 +22,19 @@ func NewMedicinesApiService() MedicinesApiServicer {
 }
 
 func (s *MedicinesApiService) GetMedicines(ctx context.Context) (ImplResponse, error) {
-	return Response(medicines), nil
+	return Response(http.StatusOK, medicines), nil
 }
 
 func (s *MedicinesApiService) AddMedicine(ctx context.Context, medicine models.Medicine) (ImplResponse, error) {
 	medicines = append(medicines, medicine)
-	return Response(medicines), nil
+	return Response(http.StatusCreated, medicines), nil
 }
 
 func (s *MedicinesApiService) GetMedicineByName(ctx context.Context, name string) (ImplResponse, error) {
 	for _, med := range medicines {
 		if med.Name == name {
-			return Response(med), nil
+			return Response(200, med), nil
 		}
 	}
-	return Response(http.StatusNotFound), errors.New("Medicine not found")
+	return Response(http.StatusNotFound, nil), errors.New("Medicine not found")
 }

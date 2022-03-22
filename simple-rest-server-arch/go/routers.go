@@ -1,6 +1,7 @@
 package goapipkg
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -28,7 +29,7 @@ func NewRouter(routers ...Router) *mux.Router {
 		for _, route := range api.Routes() {
 			var handler http.Handler
 			handler = route.HandlerFunc
-			//handler = Logger(handler, route.Name)
+			handler = Logger(handler, route.Name)
 
 			router.
 				Methods(route.Method).
@@ -39,4 +40,15 @@ func NewRouter(routers ...Router) *mux.Router {
 	}
 
 	return router
+}
+
+func EncodeJSONResponse(i interface{}, status *int, w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	if status != nil {
+		w.WriteHeader(*status)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+
+	return json.NewEncoder(w).Encode(i)
 }

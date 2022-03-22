@@ -1,5 +1,5 @@
 package goapipkg
 
-func Response(body interface{}) ImplResponse {
-	return ImplResponse{Body: body}
+func Response(code int, body interface{}) ImplResponse {
+	return ImplResponse{Code: code, Body: body}
 }

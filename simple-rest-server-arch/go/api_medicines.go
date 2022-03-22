@@ -2,7 +2,6 @@ package goapipkg
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -13,12 +12,14 @@ import (
 )
 
 type MedicinesApiController struct {
-	service MedicinesApiServicer
+	service    MedicinesApiServicer
+	errHandler ErrorHandler
 }
 
 func NewMedicinesApiController(s MedicinesApiServicer) Router {
 	controller := &MedicinesApiController{
-		service: s,
+		service:    s,
+		errHandler: DefaultErrorHandler,
 	}
 	return controller
 }
@@ -49,10 +50,11 @@ func (c *MedicinesApiController) Routes() Routes {
 func (c *MedicinesApiController) GetMedicines(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetMedicines(r.Context())
 	if err != nil {
-		fmt.Println("Controller:GetMedicines error")
+		//fmt.Println("Controller:GetMedicines error")
+		c.errHandler(w, r, err, &result)
 		return
 	}
-	json.NewEncoder(w).Encode(result)
+	EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
 func (c *MedicinesApiController) AddMedicine(w http.ResponseWriter, r *http.Request) {
@@ -62,10 +64,12 @@ func (c *MedicinesApiController) AddMedicine(w http.ResponseWriter, r *http.Requ
 
 	result, err := c.service.AddMedicine(r.Context(), medicine)
 	if err != nil {
-		fmt.Println("Controller:AddMedicine error")
+		//fmt.Println("Controller:AddMedicine error")
+		c.errHandler(w, r, err, &result)
 		return
 	}
-	json.NewEncoder(w).Encode(result)
+	//json.NewEncoder(w).Encode(result)
+	EncodeJSONResponse(result.Body, &result.Code, w)
 }
 
 func (c *MedicinesApiController) GetMedicineByName(w http.ResponseWriter, r *http.Request) {
@@ -73,8 +77,9 @@ func (c *MedicinesApiController) GetMedicineByName(w http.ResponseWriter, r *htt
 	name := vars["name"]
 	result, err := c.service.GetMedicineByName(r.Context(), name)
 	if err != nil {
-		fmt.Println("Controller:GetMedicineByName error")
+		//fmt.Println("Controller:GetMedicineByName error")
+		c.errHandler(w, r, err, &result)
 		return
 	}
-	json.NewEncoder(w).Encode(result)
+	EncodeJSONResponse(result.Body, &result.Code, w)
 }
