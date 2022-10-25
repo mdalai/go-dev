@@ -3,9 +3,14 @@ package main
 import (
 	"crypto/md5"
 	"crypto/sha256"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"encoding/hex"
 
 	"fmt"
+	"io"
+	"log"
 )
 
 // Hasing algorithm is one-way function. It is used for validation.
@@ -35,6 +40,57 @@ func SHA256Hashing(inputStr string) string {
 }
 
 
+func EncryptTxt(byteTxt []byte , key string) []byte {
+	// create an AES block
+	aesBlock, err := aes.NewCipher([]byte(MD5Hashing(key)) )
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// create a new 128bit cipher with a nonce using an AES block
+	gcmInstance, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	nonce := make([]byte, gcmInstance.NonceSize())
+	_, _ = io.ReadFull(rand.Reader, nonce)
+
+	// create cipher text
+	cipherText := gcmInstance.Seal(nonce, nonce, byteTxt, nil)
+
+	return cipherText
+}
+
+
+func DecryptCipherTxt(cipherTxt []byte, key string) []byte {
+	// hash the key
+	hashedKey := MD5Hashing(key)
+	// create a AES block
+	aesBlock, err := aes.NewCipher([]byte(hashedKey))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// create a new cipher instance
+	gcmInstance, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// split nonce and cipher text
+	nonceSize := gcmInstance.NonceSize()
+	nonce, cipherText := cipherTxt[:nonceSize], cipherTxt[nonceSize:]
+
+	// decrypt cipher text
+	origText, err := gcmInstance.Open(nil, nonce, cipherText, nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return origText
+}
+
+
+
 func main()  {
 	myStr := "hello world"
 
@@ -47,5 +103,17 @@ func main()  {
 	fmt.Println(myStr)
 	fmt.Println(MD5Hashing(myStr))
 	fmt.Println(SHA256Hashing(myStr))
+
+
+	fmt.Println("-------Encrypt----------")
+
+	encryptedByte := EncryptTxt([]byte("I have a secret need to be encrypted!"), "my.key.phrase")
+	fmt.Println(encryptedByte)
+	fmt.Println(string(EncryptTxt([]byte("My secret is that I don't have secret at all."), "my.key.phrase")))
+
+	fmt.Println("-------Decrypt----------")
+	decrypedByte := DecryptCipherTxt(encryptedByte, "my.key.phrase")
+	fmt.Println(decrypedByte)
+	fmt.Println(string(decrypedByte))
 	
 }
