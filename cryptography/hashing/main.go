@@ -1,23 +1,25 @@
 package main
 
 import (
-	"crypto/md5"
-	"crypto/sha256"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 
 	"fmt"
 	"io"
 	"log"
+
+	L "github.com/mdalai/go-dev/cryptography/hashing/mycryptolib"
 )
 
 // Hasing algorithm is one-way function. It is used for validation.
 // For communication, use encryption algorithm like AES.
 
-// The Message Digest Method 5 Algorithm (MD5) is 
-// a cryptographic algorithm that returns a 128-bit digest 
+// The Message Digest Method 5 Algorithm (MD5) is
+// a cryptographic algorithm that returns a 128-bit digest
 // from any text represented as 32-digit hexadecimal.
 func MD5Hashing(inputStr string) string {
 	// string to bytes
@@ -28,8 +30,8 @@ func MD5Hashing(inputStr string) string {
 	return hex.EncodeToString(md5Hash[:])
 }
 
-// The SHA256 (Secure Hash Algorithm 256-bits) is 
-// a cryptographic one-way hashing algorithm that returns a 256-bit hash value. 
+// The SHA256 (Secure Hash Algorithm 256-bits) is
+// a cryptographic one-way hashing algorithm that returns a 256-bit hash value.
 func SHA256Hashing(inputStr string) string {
 	// string to byte
 	byteInput := []byte(inputStr)
@@ -39,10 +41,9 @@ func SHA256Hashing(inputStr string) string {
 	return hex.EncodeToString(sha256Hash[:])
 }
 
-
-func EncryptTxt(byteTxt []byte , key string) []byte {
+func EncryptTxt(byteTxt []byte, key string) []byte {
 	// create an AES block
-	aesBlock, err := aes.NewCipher([]byte(MD5Hashing(key)) )
+	aesBlock, err := aes.NewCipher([]byte(MD5Hashing(key)))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -61,7 +62,6 @@ func EncryptTxt(byteTxt []byte , key string) []byte {
 
 	return cipherText
 }
-
 
 func DecryptCipherTxt(cipherTxt []byte, key string) []byte {
 	// hash the key
@@ -89,9 +89,7 @@ func DecryptCipherTxt(cipherTxt []byte, key string) []byte {
 	return origText
 }
 
-
-
-func main()  {
+func main() {
 	myStr := "hello world"
 
 	fmt.Println(myStr)
@@ -104,7 +102,6 @@ func main()  {
 	fmt.Println(MD5Hashing(myStr))
 	fmt.Println(SHA256Hashing(myStr))
 
-
 	fmt.Println("-------Encrypt----------")
 
 	encryptedByte := EncryptTxt([]byte("I have a secret need to be encrypted!"), "my.key.phrase")
@@ -115,5 +112,9 @@ func main()  {
 	decrypedByte := DecryptCipherTxt(encryptedByte, "my.key.phrase")
 	fmt.Println(decrypedByte)
 	fmt.Println(string(decrypedByte))
-	
+
+	fmt.Println("-------File checksum----------")
+	fmt.Println(L.GetSha256Checksum("test.txt"))
+	fmt.Println(L.GetMD5Checksum("test.txt"))
+
 }
