@@ -1,4 +1,4 @@
-package mycryptolib
+package hashing
 
 import (
 	"crypto/md5"
