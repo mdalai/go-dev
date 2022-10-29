@@ -3,6 +3,14 @@ Learn to be Gopher by following theh GO official doc tutorial [Create a Go Modul
 
 - Go slice is like an array, except that its size change dynamically.
 - Go executes init functions automatically at program startup, after global variables have been initialized.
+- To get unix time, use `time.Now().UnixNano()`
+- Why is seed used for random number generation? don't know.
+- To initialize map: `make(map[key-type]value-type)`.
+- Use the Go blank identifier _ (underscore) to ignore any returned values.
+- Introduced new func Hellos() and kept Hello() as it is to preserve Backward compatibility. 
+- Testing can expose bugs as you make changes.
+- Go test naming convention, testing package, `go test` cmd.
+- The `go test` command executes test functions (whose names begin with Test) in test files (whose names end with _test.go). You can add the -v flag to get verbose output that lists all of the tests and their results.
 
 
 1. How to use local module?
@@ -24,3 +32,4 @@ log.SetFlags(0)
 3. How to exit the program?
 
 One option is that use `log.Fatal()` to exit program.
+
