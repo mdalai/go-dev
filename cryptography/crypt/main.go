@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/mdalai/go-dev/cryptography/crypt/encdec"
 	"github.com/mdalai/go-dev/cryptography/crypt/hashing"
@@ -32,7 +33,14 @@ func main() {
 	fmt.Println(string(decrypedByte))
 
 	fmt.Println("-------File checksum----------")
-	fmt.Println(hashing.GetSha256Checksum("test.txt"))
-	fmt.Println(hashing.GetMD5Checksum("test.txt"))
+	myHashVal, err := hashing.GetSha256Checksum("test.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(myHashVal)
 
+	if myHashVal, err = hashing.GetMD5Checksum("test.txt"); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(myHashVal)
 }
