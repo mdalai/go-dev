@@ -3,23 +3,69 @@ package main
 import (
 	"fmt"
 	"log"
+	"flag"
+	"os"
 
 	"github.com/mdalai/go-dev/cryptography/crypt/encdec"
 	"github.com/mdalai/go-dev/cryptography/crypt/hashing"
 )
 
+func parseArgs() {
+	hashCmd := flag.NewFlagSet("hash", flag.ExitOnError)
+	isSha256 := hashCmd.Bool("sha256", false, "use sha256")
+	strVal := hashCmd.String("str", "", `"this string" need to be hashed`)
+	encCmd := flag.NewFlagSet("encrypt", flag.ExitOnError)
+	decCmd := flag.NewFlagSet("decrypt", flag.ExitOnError)
+
+	if len(os.Args) < 2 {
+		fmt.Println("Expected 'hash', 'encrypt' or 'decrypt' subcommands")
+		os.Exit(1)
+	}
+
+	switch os.Args[1] {
+	case "hash":
+		hashCmd.Parse(os.Args[2:])
+		var myHashVal string;
+		var err error;
+		if *strVal != "" {
+			if *isSha256 {
+				myHashVal = hashing.SHA256Hashing(*strVal)
+			} else {
+				myHashVal = hashing.MD5Hashing(*strVal)
+			}
+			fmt.Println(myHashVal)
+		} else {
+			for _, element := range hashCmd.Args() {
+				if *isSha256 {
+					myHashVal, err = hashing.GetSha256Checksum(element)
+					if err != nil {
+						log.Fatal(err)
+					}
+				} else {
+					if myHashVal, err = hashing.GetMD5Checksum(element); err != nil {
+						log.Fatal(err)
+					}
+				}		
+				fmt.Println(myHashVal)
+			}
+		}
+		
+	case "encrypt":
+		encCmd.Parse(os.Args[2:])
+		fmt.Println("subcommand 'encrypt'")
+		fmt.Println("  tail: ", encCmd.Args())	
+	case "decrypt":
+		hashCmd.Parse(os.Args[2:])
+		fmt.Println("subcommand 'decrypt'")
+		fmt.Println("  tail: ", decCmd.Args())
+	default:
+		fmt.Println("Expected 'hash', 'encrypt' or 'decrypt' subcommands")
+		os.Exit(1)
+	}
+
+}
+
 func main() {
-	myStr := "hello world"
-
-	fmt.Println(myStr)
-	fmt.Println(hashing.MD5Hashing(myStr))
-	fmt.Println(hashing.SHA256Hashing(myStr))
-
-	myStr = "Hashing strings using GO crypto package"
-
-	fmt.Println(myStr)
-	fmt.Println(hashing.MD5Hashing(myStr))
-	fmt.Println(hashing.SHA256Hashing(myStr))
 
 	fmt.Println("-------Encrypt----------")
 
@@ -33,14 +79,6 @@ func main() {
 	fmt.Println(string(decrypedByte))
 
 	fmt.Println("-------File checksum----------")
-	myHashVal, err := hashing.GetSha256Checksum("test.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(myHashVal)
-
-	if myHashVal, err = hashing.GetMD5Checksum("test.txt"); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(myHashVal)
+	parseArgs()
+	
 }
