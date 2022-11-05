@@ -12,8 +12,8 @@ import (
 
 func parseArgs() {
 	hashCmd := flag.NewFlagSet("hash", flag.ExitOnError)
-	isSha256 := hashCmd.Bool("sha256", false, "use sha256")
-	strVal := hashCmd.String("str", "", `"this string" need to be hashed`)
+	isSha256 := hashCmd.Bool("sha256", false, "Optional. If hash with sha256, use this boolean argument. Otherwise hashes with MD5 by default.")
+	strVal := hashCmd.String("str", "", `Optional. If hash a string, provide "the string" using this argument.`)
 	encCmd := flag.NewFlagSet("encrypt", flag.ExitOnError)
 	decCmd := flag.NewFlagSet("decrypt", flag.ExitOnError)
 
