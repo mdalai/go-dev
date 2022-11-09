@@ -6,3 +6,6 @@
 ./crypt hash -str "hello world"
 ./crypt hash -str "hello world" -sha256
 ```
+
+## FAQ
+1. Read file with `os.open()` VS `ioutil.ReadFile()`? 

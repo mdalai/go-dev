@@ -1,1 +1,4 @@
 crypt
+.my.key
+# encrypted file with ext
+*.enc

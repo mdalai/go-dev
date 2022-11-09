@@ -67,6 +67,15 @@ func parseArgs() {
 		if *encStr != "" {
 			fmt.Println("Encrypting this string: ", *encStr)
 			encryptedByte = encdec.EncryptTxt([]byte(*encStr), "my.key.phrase")
+		} else {
+			if len(encCmd.Args()) < 3 {
+				log.Fatal("Not enough arguments!")
+			}
+			srcFile, dstFile, keyFile := encCmd.Args()[0], encCmd.Args()[1], encCmd.Args()[2]
+			err := encdec.EncryptFile(srcFile, dstFile, keyFile)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 		if *enc2bytes {
 			fmt.Println(encryptedByte)
