@@ -31,3 +31,29 @@ func EncryptFile(srcFpath string, dstFpath string, keyFpath string) error {
 
 	return nil
 }
+
+
+func DecryptFile(srcFpath string, dstFpath string, keyFpath string) error {
+	cipherTxt, err := ioutil.ReadFile(srcFpath)
+	if err != nil {
+		return err
+	}
+
+	key, err := ioutil.ReadFile(keyFpath)
+	if err != nil {
+		return err
+	}
+
+	plainTxt := DecryptCipherTxt(cipherTxt, string(key))
+
+	if dstFpath == "" {
+		fmt.Println(string(plainTxt))
+	} else {
+		if err := ioutil.WriteFile(dstFpath, plainTxt, 0777); err != nil {
+			return err
+		}
+	}
+	
+	return nil
+
+}

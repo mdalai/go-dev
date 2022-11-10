@@ -91,6 +91,20 @@ func parseArgs() {
 			fmt.Println("Decrypting this string: ", *decStr)
 			fmt.Println("Converted to []byte: ", byteStr2bytes(*decStr))
 			decryptedByte = encdec.DecryptCipherTxt(byteStr2bytes(*decStr), "my.key.phrase")
+		} else {
+			srcFile, dstFile, keyFile := "","",""
+			if len(decCmd.Args()) < 2 {
+				log.Fatal("Not enough arguments!")
+			} else if len(decCmd.Args()) == 2 {
+				srcFile, keyFile = decCmd.Args()[0], decCmd.Args()[1]
+			} else {
+				srcFile, dstFile, keyFile = decCmd.Args()[0], decCmd.Args()[1], decCmd.Args()[2]
+			}
+			
+			err := encdec.DecryptFile(srcFile, dstFile, keyFile)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 		if *dec2bytes {
 			fmt.Println(decryptedByte)
