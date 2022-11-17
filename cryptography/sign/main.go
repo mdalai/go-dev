@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+
+	S "github.com/mdalai/go-dev/cryptography/sign/signing"
+	K "github.com/mdalai/go-dev/cryptography/keygen"
 )
 
 func main() {
@@ -12,7 +15,7 @@ func main() {
 	plainTxt := []byte("I am who i am. Sign me")
 
 	// Create RSA key pair: priKey, pubKey
-	priKey, pubKey, err := GeneratePubPriKeyPair()
+	priKey, pubKey, err := K.GeneratePubPriKeyPair()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -21,7 +24,7 @@ func main() {
 	fmt.Printf("\n===== publicKey ===== \n\n %v \n\n", pubKey)
 
 	// Create a signature
-	signature, err := SignTxt(plainTxt, priKey)
+	signature, err := S.SignTxt(plainTxt, priKey)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,9 +32,10 @@ func main() {
 
 
 	// Verify signature
-	err = VerifyTxt(plainTxt, pubKey, signature)
+	err = S.VerifyTxt(plainTxt, pubKey, signature)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Signature verification success!")
+
 }

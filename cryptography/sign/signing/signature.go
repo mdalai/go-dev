@@ -1,27 +1,13 @@
-package main
+package signing
 
 import (
 	"crypto"
 	"crypto/rsa"
 	"crypto/rand"
-	"crypto/x509"
 	"crypto/sha512"
 )
 
 
-
-// Generate keys that can be used immediately.
-//
-func GeneratePubPriKeyPair() (*rsa.PrivateKey, *rsa.PublicKey, error) {
-	priKey, err := rsa.GenerateKey(rand.Reader, 4096) 
-	if err != nil {
-		return nil, nil, err
-	}
-	// The public key is a part of the *rsa.PrivateKey struct
-	pubKey := &priKey.PublicKey
-
-	return priKey, pubKey, nil
-}
 
 func SignTxt(plainTxt []byte, privateKey *rsa.PrivateKey) ([]byte, error) {
 	var opts rsa.PSSOptions
@@ -84,20 +70,4 @@ func VerifyTxt(plainTxt []byte, publicKey *rsa.PublicKey, signature []byte) erro
 	// if no error, means the signature is valid, 
 	// verification success.
 	return nil
-}
-
-
-// Generate private/public keys in bytes
-func GeneratePubPriKeyPairBytes() ([]byte, []byte, error) {
-	priKey, pubKey, err := GeneratePubPriKeyPair() 
-	if err != nil {
-		return []byte(""), []byte(""), err
-	}
-
-	privateKey := x509.MarshalPKCS1PrivateKey(priKey)
-	publicKey, err := x509.MarshalPKIXPublicKey(pubKey)
-	if err != nil {
-		return nil, nil, err
-	}
-	return privateKey, publicKey, nil
 }
